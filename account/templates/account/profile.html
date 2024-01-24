@@ -3,27 +3,23 @@
 {% block title %}Profile{% endblock title %} 
 {%block content %} 
 <!--Profile Details Start-->
-<div class="m-5 border shadow">
-    <div class="p-5">
-        <div class="d-flex justify-content-between align-item-center">
-            <h1 class="text-warning">User Profile</h1>
-            <a href="#" class="text-decoration-none">
-                <h1>
-                @{{object.username}}
-            </h1>
-            </a>
-        </div><hr>
-        <p class="fs-4"><strong>Name: </strong>{{object.first_name}} {{object.last_name}}</p>
-        <p class="fs-4"><strong>Email: </strong>{{object.email}}</p>
-        <p class="fs-4"><strong>Gender: </strong>{{object.gender}}</p>
-        {% if request.user.id == object.id %}
-        <div class="btn-group">
-            <a href="{% url "update_profile" %}" class="btn btn-outline-primary">Edit Profile</a>
-            <a href="{% url "edit_password" %}" class="btn btn-outline-danger">Change Password</a>
-        </div>
-        {% endif %}
+<div class="max-w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">@{{object.username}}</h5>
+    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Total Completed Task: {{task_history}}</p>
 
-    </div>
+        <hr>
+    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Account Created At: {{object.created_at}}</p>
+    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Name: {{object.first_name}} {{object.last_name}}</p>
+    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Email: {{object.email}}</p>
+    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Phone: {{object.phone}}</p>
+    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Gender: {{object.gender}}</p>
+    <a href="{% url "update_profile" %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        Edit
+    </a>
+    <a href="{% url "edit_password" %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        Edit Password
+    </a>
 </div>
+
 <!--Profile Details End-->
 {% endblock content %}

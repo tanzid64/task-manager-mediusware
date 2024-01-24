@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import FormView, DetailView, UpdateView, DeleteView
+from django.views.generic import FormView, DetailView, UpdateView, CreateView, DeleteView
 from django.views import View
 from django.urls import reverse_lazy
 from .forms import AddTaskForm
@@ -7,7 +7,7 @@ from .models import Task, Photo
 from django.contrib import messages
 # Create your views here.
 class AddTaskView(FormView):
-    template_name = 'task/task_form.html'
+    template_name = 'task/add_task.html'
     form_class = AddTaskForm
     success_url = reverse_lazy('homepage')
     
@@ -41,7 +41,7 @@ class TaskCompleteView(View):
         return redirect('homepage')
     
 class TaskEditView(UpdateView):
-    template_name = 'task/task_form.html'
+    template_name = 'task/edit_task.html'
     model = Task
     form_class = AddTaskForm
     slug_field = 'slug'
@@ -56,7 +56,7 @@ class TaskEditView(UpdateView):
         form.save()
         messages.success(self.request, 'Task Updated Successfully')
         return super().form_valid(form)
-    
+
 class DeleteTaskImageView(View):
     def get(self, request,pk):
         img = get_object_or_404(Photo, pk=pk)

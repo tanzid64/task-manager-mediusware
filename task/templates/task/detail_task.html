@@ -1,34 +1,70 @@
 {% extends "core/base.html" %} {% block title %}Detail Task{% endblock title %} 
 {%block content %}
-<!-- Book Details Start-->
+<!-- Task Details Start-->
+<div class="max-w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for img in images %}
-      <img class="task-img d-block card-img-left w-75" src="{{img.image.url}}"/>
-      <a href="{% url "del_img" img.id %}" class="text-danger ">Remove</a>
-      {% endfor %}
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-5">
+  {% for img in images %}
+    <div>
+        <img class="h-auto max-w-full rounded-lg" src="{{img.image.url}}" alt="">
+        {% if request.user.is_staff %}
+        <a href="{% url "del_img" img.id %}" class="text-red-600 ">Delete Image</a>
+        {% endif %}
     </div>
-  <div class="card-body">
-    <h4 class="card-title ">{{object.title}}</h4>
-    <p class="card-text fs-5">Post Date: {{object.created_at}}</p>
-    <p class="card-text fs-5">Due Date: {{object.due_date}}</p>
-    <p class="card-text fs-5 text-primary">Priority: {{object.priority}}</p>
-    <p class="card-text fs-5">{{object.description}}</p>
-    {% if request.user.is_authenticated %}
-      {% if object.is_completed %}
-      This Task is completed by {{object.completed_by}}
-      {% else %}
-      <a href="{% url "complete_task" object.slug %}" class="btn btn-warning">Mark as Complete</a>
+  {% endfor %}
+</div>
+
+    <div class="p-5">
+        <a href="#">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{object.title}}</h5>
+        </a>
+        <div class="flex justify-between">
+          <div class="text-sm text-gray-500 dark:text-gray-400">{{object.created_at}}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">Priority: {{object.priority}}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">Last Completion Date: {{object.due_date}}</div>
+        </div>
+        <hr>
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{object.description}}</p>
+      {% if request.user.is_authenticated %}
+        {% if object.is_completed %}
+        <p class="dark:text-white m-2">
+          This Task is completed by {{object.completed_by}}
+        </p>
+        {% else %}
+        <a href="{% url "complete_task" object.slug %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              Mark As Complete
+              <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+              </svg>
+          </a>
+        {% endif %}
       {% endif %}
-    {% elif request.user.is_staff %}
-    <a href="#" class="btn btn-primary">Edit</a>
+    {% if request.user.is_staff %}
+    <a href="{% url "edit_task" object.slug %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            Edit
+             <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+            </svg>
+        </a>
     {% else %}
-    <div class="btn-group">
-      <a href="{% url "registration" %}" class="btn btn-warning">Register</a> 
-    <a href="{% url "login" %}" class="btn btn-primary">LogIn</a>
-    </div>
-    {% endif %}
-  </div>
+    <a href="{% url "registration" %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-700 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800">
+            Register
+             <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+            </svg>
+        </a>
+        <a href="{% url "login" %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            Login
+             <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+            </svg>
+        </a>
 
-<!-- Book Details End -->
+    {% endif %}
+        
+    </div>
+</div>
+
+<!-- Task Details End -->
+
 {% endblock content %}

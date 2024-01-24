@@ -1,5 +1,5 @@
 PRIORITY_CHOICES = [
-    ('low', 'Low'),
-    ('medium', 'Medium'),
-    ('high', 'High'),
+    ('Low', 'Low'),
+    ('Medium', 'Medium'),
+    ('High', 'High'),
 ]
