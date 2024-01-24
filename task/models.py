@@ -10,7 +10,7 @@ class Task(TimeStamp):
     description = models.TextField()
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES)
     is_completed = models.BooleanField(default=False)
-    completed_by = models.ForeignKey(User, related_name='task',default=None, on_delete=models.SET_NULL)
+    completed_by = models.ForeignKey(User, related_name='task',default=None,null=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
         return self.title
