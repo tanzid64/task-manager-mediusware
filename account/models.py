@@ -8,8 +8,7 @@ class User(AbstractUser, TimeStamp):
     email = models.EmailField(unique = True)
     phone = models.CharField(max_length = 15, default='')
     gender = models.CharField(max_length=8, choices=GENDER_TYPE)
-    is_active = models.BooleanField(default=False)
-
+    
     objects = UserManager()
     REQUIRED_FIELDS = ('email',)
 

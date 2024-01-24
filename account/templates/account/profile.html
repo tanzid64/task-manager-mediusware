@@ -1,0 +1,29 @@
+{% extends "core/base.html" %} 
+{% load crispy_forms_tags %}
+{% block title %}Profile{% endblock title %} 
+{%block content %} 
+<!--Profile Details Start-->
+<div class="m-5 border shadow">
+    <div class="p-5">
+        <div class="d-flex justify-content-between align-item-center">
+            <h1 class="text-warning">User Profile</h1>
+            <a href="#" class="text-decoration-none">
+                <h1>
+                @{{object.username}}
+            </h1>
+            </a>
+        </div><hr>
+        <p class="fs-4"><strong>Name: </strong>{{object.first_name}} {{object.last_name}}</p>
+        <p class="fs-4"><strong>Email: </strong>{{object.email}}</p>
+        <p class="fs-4"><strong>Gender: </strong>{{object.gender}}</p>
+        {% if request.user.id == object.id %}
+        <div class="btn-group">
+            <a href="{% url "update_profile" %}" class="btn btn-outline-primary">Edit Profile</a>
+            <a href="{% url "edit_password" %}" class="btn btn-outline-danger">Change Password</a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+<!--Profile Details End-->
+{% endblock content %}
