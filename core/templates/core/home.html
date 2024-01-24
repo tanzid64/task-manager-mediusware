@@ -1,2 +1,28 @@
 {% extends "core/base.html" %} {% block title %}Home{% endblock title %} 
-{%block content %} {% endblock content %}
+{%block content %}
+<!-- Content Section start -->
+        <div class="col py-3">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <!-- Card Start -->
+                {% for task in data %}
+                <div class="col">
+                    <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">{{task.title}}</h5>
+                        <h6 class="card-subtitle my-2">Post Date: {{task.created_at}}</h6>
+                        <h6 class="card-subtitle my-2">Post Date: {{task.due_date}}</h6>
+                        <h6 class="card-subtitle my-2">Priority: {{task.priority}}</h6>
+                        </p>
+                        <p class="card-text">
+                        {{task.description | truncatewords:20}}
+                        </p>
+                        <a href="{% url "detail_task" task.slug %}" class="btn btn-primary">More</a>
+                        <a href="{% url "edit_task" task.slug %}" class="btn btn-primary">Edit</a>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- Card End -->
+        </div>
+            <!-- Content Section End -->
+{% endblock content %}

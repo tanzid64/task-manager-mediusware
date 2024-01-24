@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from task.models import Task
 # Create your views here.
 class UserRegistrationView(CreateView):
     template_name = 'account/account.html'
@@ -41,6 +42,11 @@ class UserProfileView(DetailView):
     model = User
     def get_object(self):
         return self.request.user
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['type'] = 'Edit Profile'
+        context['task_history'] = Task.objects.filter(completed_by=self.request.user)
+        return context
     
 class UserProfileUpdateView(LoginRequiredMixin,UpdateView):
     template_name = 'account/account.html'

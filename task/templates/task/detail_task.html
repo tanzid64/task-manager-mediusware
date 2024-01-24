@@ -1,0 +1,34 @@
+{% extends "core/base.html" %} {% block title %}Detail Task{% endblock title %} 
+{%block content %}
+<!-- Book Details Start-->
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for img in images %}
+      <img class="task-img d-block card-img-left w-75" src="{{img.image.url}}"/>
+      <a href="{% url "del_img" img.id %}" class="text-danger ">Remove</a>
+      {% endfor %}
+    </div>
+  <div class="card-body">
+    <h4 class="card-title ">{{object.title}}</h4>
+    <p class="card-text fs-5">Post Date: {{object.created_at}}</p>
+    <p class="card-text fs-5">Due Date: {{object.due_date}}</p>
+    <p class="card-text fs-5 text-primary">Priority: {{object.priority}}</p>
+    <p class="card-text fs-5">{{object.description}}</p>
+    {% if request.user.is_authenticated %}
+      {% if object.is_completed %}
+      This Task is completed by {{object.completed_by}}
+      {% else %}
+      <a href="{% url "complete_task" object.slug %}" class="btn btn-warning">Mark as Complete</a>
+      {% endif %}
+    {% elif request.user.is_staff %}
+    <a href="#" class="btn btn-primary">Edit</a>
+    {% else %}
+    <div class="btn-group">
+      <a href="{% url "registration" %}" class="btn btn-warning">Register</a> 
+    <a href="{% url "login" %}" class="btn btn-primary">LogIn</a>
+    </div>
+    {% endif %}
+  </div>
+
+<!-- Book Details End -->
+{% endblock content %}

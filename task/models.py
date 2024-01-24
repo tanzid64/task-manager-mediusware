@@ -9,6 +9,7 @@ class Task(TimeStamp):
     slug = models.SlugField(unique=True)
     description = models.TextField()
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES)
+    due_date = models.DateField(null=True, blank=True)
     is_completed = models.BooleanField(default=False)
     completed_by = models.ForeignKey(User, related_name='task',default=None,null=True, on_delete=models.SET_NULL)
 
