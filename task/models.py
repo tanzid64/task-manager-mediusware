@@ -22,7 +22,7 @@ class Task(TimeStamp):
 
 class Photo(TimeStamp):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='photo_set')
-    image = models.ImageField(upload_to='task_photos/')
+    image = models.ImageField(upload_to='media/')
 
     def __str__(self):
         return self.image.name

@@ -1,9 +1,13 @@
-{% extends "core/base.html" %} {% block title %}Detail Task{% endblock title %} 
+{% extends "core/base.html" %} {% load static %}
+{% block title %}Detail Task{% endblock title %} 
 {%block content %}
 <!-- Task Details Start-->
 <div class="max-w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-5">
+  {% if images|length  == 0 %}
+        <img class="h-auto max-w-full rounded-lg" src="{% static "default-img.jpg" %}" alt="">
+  {% else %}
   {% for img in images %}
     <div>
         <img class="h-auto max-w-full rounded-lg" src="{{img.image.url}}" alt="">
@@ -12,6 +16,7 @@
         {% endif %}
     </div>
   {% endfor %}
+  {% endif %}
 </div>
 
     <div class="p-5">
