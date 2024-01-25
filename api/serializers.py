@@ -39,18 +39,27 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return Task.objects.filter(completed_by=obj).count()
 
 # Task
+    
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['image']
+
 class TaskCreateSerializer(serializers.ModelSerializer):
-    task_photo = serializers.ImageField(required=False)
+    task_photos = PhotoSerializer(many=True, required=False, write_only=True)
+
     class Meta:
         model = Task
         exclude = ['is_completed', 'completed_by', 'slug']
+
     def create(self, validated_data):
-        task_photo_data = validated_data.pop('task_photo', None)
+        task_photos_data = validated_data.pop('task_photos', None)
 
         task = super().create(validated_data)
 
-        if task_photo_data:
-            Photo.objects.create(task=task, **task_photo_data)
+        if task_photos_data:
+            for photo_data in task_photos_data:
+                Photo.objects.create(task=task, **photo_data)
 
         return task
 

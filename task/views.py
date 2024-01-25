@@ -52,6 +52,12 @@ class TaskEditView(UpdateView):
         messages.success(self.request, 'Task Updated Successfully')
         return super().form_valid(form)
 
+class TaskDeleteView(DeleteView):
+    model = Task
+    template_name = 'task/task_confirm_delete.html'
+    success_url = reverse_lazy('homepage')
+
+
 class DeleteTaskImageView(View):
     def get(self, request,pk):
         img = get_object_or_404(Photo, pk=pk)

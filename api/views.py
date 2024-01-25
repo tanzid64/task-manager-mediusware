@@ -7,7 +7,10 @@ from rest_framework.authtoken.models import Token
 from .permission import IsAdminOrStaffUser
 from task.models import Task
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, TaskCreateSerializer, TaskListSerializer, TaskDetailSerializer, TaskCompleteSerializer
-
+from rest_framework import viewsets
+from .filters import TaskFilter
+from django_filters.rest_framework import DjangoFilterBackend
+# from rest_framework import filters
 # Account App
 class UserRegistrationAPIView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
@@ -54,22 +57,24 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 # Task App
-class TaskListCreateAPIView(generics.ListCreateAPIView):
-    
-    queryset = Task.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.all()    
+    # filter 
+    filter_backends = [ DjangoFilterBackend]
+    filterset_class = TaskFilter
     def get_serializer_class(self):
         # Use different serializer classes for listing and creating tasks
         if self.request.method == 'POST':
             return TaskCreateSerializer
         else:
             return TaskListSerializer
-    def perform_create(self, serializer):
-        # Allow only staff users to create tasks
-        if self.request.user.is_staff:
-            serializer.save()
-        else:
-            raise permissions.PermissionDenied("You don't have permission to create tasks.")
+    def create(self, request, *args, **kwargs):
+        # Check if the user is an admin before allowing task creation
+        if not request.user.is_staff:
+            return Response({"detail": "Permission denied. Only admins can create tasks."}, status=status.HTTP_403_FORBIDDEN)
+
 
 class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
