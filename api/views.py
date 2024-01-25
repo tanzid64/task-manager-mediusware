@@ -5,8 +5,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from rest_framework.authtoken.models import Token
 from .permission import IsAdminOrStaffUser
+from django.contrib.auth.views import PasswordResetView
 from task.models import Task
-from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, TaskCreateSerializer, TaskListSerializer, TaskDetailSerializer, TaskCompleteSerializer, PasswordChangeSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, TaskCreateSerializer, TaskListSerializer, TaskDetailSerializer, TaskCompleteSerializer, PasswordChangeSerializer, PasswordResetSerializer
 from rest_framework import viewsets
 from .filters import TaskFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -66,6 +67,16 @@ class UserPasswordChangeAPIView(APIView):
             return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class PasswordResetAPIView(APIView, PasswordResetView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PasswordResetSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            return self.form_valid(serializer)
+        return self.form_invalid(serializer)
+    
 # Task App
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()    

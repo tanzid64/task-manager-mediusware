@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordResetForm
 # Models
 from account.models import User
 from task.models import Task, Photo
@@ -38,7 +38,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_task_history_count(self, obj):
         return Task.objects.filter(completed_by=obj).count()
 
-
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True, required=True)
     new_password1 = serializers.CharField(write_only=True, required=True)
@@ -70,9 +69,26 @@ class PasswordChangeSerializer(serializers.Serializer):
         user.set_password(new_password)
         user.save()
 
-        # You can perform additional actions here, e.g., logging the change
         return user
 
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+
+        password_reset_form = PasswordResetForm({'email': value})
+        if not password_reset_form.is_valid():
+            raise serializers.ValidationError("No account found with this email address.")
+        return value
+
+    def save(self):
+
+        email = self.validated_data["email"]
+        password_reset_form = PasswordResetForm({'email': email})
+        if password_reset_form.is_valid():
+            password_reset_form.save(request=None, use_https=False)  # Customize as needed
+        else:
+            raise serializers.ValidationError("Error processing the password reset.")
 # Task
     
 class PhotoSerializer(serializers.ModelSerializer):
