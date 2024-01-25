@@ -42,7 +42,6 @@ class UserProfileView(DetailView):
         return self.request.user
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['type'] = 'Edit Profile'
         context['task_history'] = Task.objects.filter(completed_by=self.request.user).count()
         return context
     
