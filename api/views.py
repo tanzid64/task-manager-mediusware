@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
-from rest_framework import generics
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework import status
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect
 from rest_framework.authtoken.models import Token
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer
 
 # Account App
 class UserRegistrationAPIView(generics.CreateAPIView):
@@ -38,4 +38,15 @@ class UserLoginAPIView(APIView):
                 return Response({'error' : "Invalid Credential"})
         return Response(serializer.errors)
 
+class UserLogoutAPIView(APIView):
+    def get(self, request):
+        request.user.auth_token.delete()
+        logout(request)
+        return redirect('login')
+    
+class UserProfileAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user

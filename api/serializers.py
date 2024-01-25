@@ -29,3 +29,11 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    task_history_count = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'phone', 'task_history_count']
+    def get_task_history_count(self, obj):
+        return Task.objects.filter(completed_by=obj).count()
