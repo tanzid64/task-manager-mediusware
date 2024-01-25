@@ -9,6 +9,7 @@ from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from task.models import Task
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetCompleteView, PasswordResetConfirmView
 # Create your views here.
 class UserRegistrationView(CreateView):
     template_name = 'account/registration.html'
@@ -68,4 +69,3 @@ class UserPasswordUpdateView(LoginRequiredMixin,PasswordChangeView):
     def form_valid(self, form):
         messages.success(self.request, "Password Updated Successfully.")
         return super().form_valid(form)
-    

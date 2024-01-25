@@ -16,11 +16,6 @@ class AddTaskView(FormView):
         messages.success(self.request, 'Task Added Successfully.')
         return super().form_valid(form)
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['type'] = 'Add Task'
-        return context
-    
 class TaskDetailsView(DetailView):
     template_name = 'task/detail_task.html'
     model = Task

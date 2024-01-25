@@ -10,6 +10,7 @@ class HomeView(TemplateView):
         priority_filter = self.request.GET.get('priority', None)
         due_date_filter = self.request.GET.get('due_date', None)
         created_at_filter = self.request.GET.get('created_at', None)
+        search_query = self.request.GET.get('search', None)
         queryset = Task.objects.all()
 
         if priority_filter:
@@ -21,5 +22,7 @@ class HomeView(TemplateView):
         if created_at_filter:
             queryset = queryset.filter(created_at__date=created_at_filter)
         
+        if search_query:
+            queryset = queryset.filter(title__icontains=search_query)
         context['data'] = queryset
         return context

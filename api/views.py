@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from rest_framework.authtoken.models import Token
-from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer
+from .permission import IsAdminOrStaffUser
+from task.models import Task
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, TaskCreateSerializer, TaskListSerializer, TaskDetailSerializer, TaskCompleteSerializer
 
 # Account App
 class UserRegistrationAPIView(generics.CreateAPIView):
@@ -42,7 +44,7 @@ class UserLogoutAPIView(APIView):
     def get(self, request):
         request.user.auth_token.delete()
         logout(request)
-        return redirect('login')
+        return redirect('login-api')
     
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
@@ -50,3 +52,39 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+# Task App
+class TaskListCreateAPIView(generics.ListCreateAPIView):
+    
+    queryset = Task.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    def get_serializer_class(self):
+        # Use different serializer classes for listing and creating tasks
+        if self.request.method == 'POST':
+            return TaskCreateSerializer
+        else:
+            return TaskListSerializer
+    def perform_create(self, serializer):
+        # Allow only staff users to create tasks
+        if self.request.user.is_staff:
+            serializer.save()
+        else:
+            raise permissions.PermissionDenied("You don't have permission to create tasks.")
+
+class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    lookup_field = 'slug'
+    serializer_class = TaskDetailSerializer
+    permission_classes = [IsAdminOrStaffUser]
+
+class TaskCompleteAPIView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskCompleteSerializer
+    lookup_field = 'slug'
+    permission_classes = [permissions.IsAuthenticated]
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(is_completed=True, completed_by=request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

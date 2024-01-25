@@ -37,3 +37,50 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['username', 'first_name', 'last_name', 'email', 'phone', 'task_history_count']
     def get_task_history_count(self, obj):
         return Task.objects.filter(completed_by=obj).count()
+
+# Task
+class TaskCreateSerializer(serializers.ModelSerializer):
+    task_photo = serializers.ImageField(required=False)
+    class Meta:
+        model = Task
+        exclude = ['is_completed', 'completed_by', 'slug']
+    def create(self, validated_data):
+        task_photo_data = validated_data.pop('task_photo', None)
+
+        task = super().create(validated_data)
+
+        if task_photo_data:
+            Photo.objects.create(task=task, **task_photo_data)
+
+        return task
+
+class TaskListSerializer(serializers.ModelSerializer):
+    task_photo = serializers.SerializerMethodField()
+    class Meta:
+        model = Task
+        fields = '__all__'
+    def get_task_photo(self, obj):
+        photos = Photo.objects.filter(task=obj)
+        try:
+            serialized_photos = [{'image': photo.image.url} for photo in photos]
+        except:
+            serialized_photos = "No Photos"
+        return serialized_photos
+
+class TaskDetailSerializer(serializers.ModelSerializer):
+    task_photo = serializers.ImageField(required=False)
+    class Meta:
+        model = Task
+        fields = "__all__"
+    def get_task_photo(self, obj):
+        photos = Photo.objects.filter(task=obj)
+        try:
+            serialized_photos = [{'image': photo.image.url} for photo in photos]
+        except:
+            serialized_photos = "No Photos"
+        return serialized_photos
+    
+class TaskCompleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['is_completed']
