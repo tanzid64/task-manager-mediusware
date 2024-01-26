@@ -1,16 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import FormView, DetailView, UpdateView, CreateView, DeleteView
+from django.views.generic import FormView, DetailView, UpdateView, DeleteView
 from django.views import View
 from django.urls import reverse_lazy
 from .forms import AddTaskForm
 from .models import Task, Photo
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 # Create your views here.
-class AddTaskView(FormView):
+class AddTaskView(UserPassesTestMixin,FormView):
     template_name = 'task/add_task.html'
     form_class = AddTaskForm
     success_url = reverse_lazy('homepage')
-    
+    def test_func(self):
+        return self.request.user.is_staff
     def form_valid(self,form):
         form.save()
         messages.success(self.request, 'Task Added Successfully.')
@@ -24,6 +26,7 @@ class TaskDetailsView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['images'] = Photo.objects.filter(task=self.get_object())
+        context['total_images'] = Photo.objects.filter(task=self.get_object()).count()
         return context
     
 class TaskCompleteView(View):
@@ -35,13 +38,15 @@ class TaskCompleteView(View):
         messages.success(self.request, 'Successfully completed task.')
         return redirect('homepage')
     
-class TaskEditView(UpdateView):
+class TaskEditView(UserPassesTestMixin, UpdateView):
     template_name = 'task/edit_task.html'
     model = Task
     form_class = AddTaskForm
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
     success_url = reverse_lazy('homepage')
+    def test_func(self):
+        return self.request.user.is_staff
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['type'] = 'Edit Task'
@@ -52,15 +57,19 @@ class TaskEditView(UpdateView):
         messages.success(self.request, 'Task Updated Successfully')
         return super().form_valid(form)
 
-class TaskDeleteView(DeleteView):
+class TaskDeleteView(UserPassesTestMixin, DeleteView):
     model = Task
     template_name = 'task/task_confirm_delete.html'
     success_url = reverse_lazy('homepage')
+    def test_func(self):
+        return self.request.user.is_staff
 
 
-class DeleteTaskImageView(View):
+class DeleteTaskImageView(UserPassesTestMixin, View):
     def get(self, request,pk):
         img = get_object_or_404(Photo, pk=pk)
         img.delete()
         messages.warning(self.request, 'Image Delation Successfull')
         return redirect('homepage')
+    def test_func(self):
+        return self.request.user.is_staff

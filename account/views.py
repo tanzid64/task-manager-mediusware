@@ -9,13 +9,12 @@ from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from task.models import Task
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetCompleteView, PasswordResetConfirmView
 # Create your views here.
 class UserRegistrationView(CreateView):
     template_name = 'account/registration.html'
     model = User
     form_class = UserRegistrationForm
-    success_url = reverse_lazy('homepage')
+    success_url = reverse_lazy('login')
     def form_valid(self, form):
         messages.success(self.request, 'User creation successfull, please check your email to active account.')
         return super().form_valid(form)
@@ -35,7 +34,7 @@ def UserLogoutView(request):
     logout(request)
     return redirect('login')
 
-class UserProfileView(DetailView):
+class UserProfileView(LoginRequiredMixin, DetailView):
     template_name = 'account/profile.html'
     model = User
     def get_object(self):

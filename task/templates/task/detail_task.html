@@ -3,21 +3,23 @@
 {%block content %}
 <!-- Task Details Start-->
 <div class="max-w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-
 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-5">
-  {% if images|length  == 0 %}
-        <img class="h-auto max-w-full rounded-lg" src="{% static "default-img.jpg" %}" alt="">
+  {% if total_images == 0 %}
+  <img class="h-auto max-w-full rounded-lg" src="{% static 'default-img.jpg' %}" alt="">
   {% else %}
-  {% for img in images %}
-    <div>
-        <img class="h-auto max-w-full rounded-lg" src="{{img.image.url}}" alt="">
-        {% if request.user.is_staff %}
-        <a href="{% url "del_img" img.id %}" class="text-red-600 ">Delete Image</a>
+    {% for img in images %}
+      <div>
+        {% if img.image and img.image.url %}
+          <img class="h-auto max-w-full rounded-lg" src="{{ img.image.url }}" alt="">
         {% endif %}
-    </div>
-  {% endfor %}
-  {% endif %}
+        {% if request.user.is_staff %}
+          <a href="{% url 'del_img' img.id %}" class="text-red-600">Delete Image</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+    {% endif %}
 </div>
+
 
     <div class="p-5">
         <a href="#">
@@ -35,13 +37,6 @@
         <p class="dark:text-white m-2">
           This Task is completed by {{object.completed_by}}
         </p>
-        {% else %}
-        <a href="{% url "complete_task" object.slug %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              Mark As Complete
-              <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-              </svg>
-          </a>
         {% endif %}
       {% endif %}
     {% if request.user.is_staff %}
@@ -51,13 +46,20 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
             </svg>
         </a>
-        <a href="" class="inline-flex items-center my-2 px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300">
+        <a href="{% url "delete_task" task.slug %}" class="inline-flex items-center my-2 px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300">
                         Delete
                         <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                         </svg>
                     </a>
-    {% else %}
+                    {% elif request.user.is_authenticated %}
+                    <a href="{% url "complete_task" object.slug %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              Mark As Complete
+              <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+              </svg>
+          </a>
+                    {% else %}
     <a href="{% url "registration" %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-700 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800">
             Register
              <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">

@@ -79,32 +79,57 @@ class PasswordResetAPIView(APIView, PasswordResetView):
     
 # Task App
 class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()    
-    # filter 
-    filter_backends = [ DjangoFilterBackend]
+    queryset = Task.objects.all()
+    filter_backends = [DjangoFilterBackend]
     filterset_class = TaskFilter
+
     def get_serializer_class(self):
-        # Use different serializer classes for listing and creating tasks
         if self.request.method == 'POST':
             return TaskCreateSerializer
         else:
             return TaskListSerializer
+
     def create(self, request, *args, **kwargs):
-        # Check if the user is an admin before allowing task creation
         if not request.user.is_staff:
             return Response({"detail": "Permission denied. Only admins can create tasks."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def update(self, request, *args, **kwargs):
-        # Check if the user is an admin before allowing task creation
         if not request.user.is_staff:
-            return Response({"detail": "Permission denied. Only admins can create tasks."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Permission denied. Only admins can update tasks."}, status=status.HTTP_403_FORBIDDEN)
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
+
     def partial_update(self, request, *args, **kwargs):
-        # Check if the user is an admin before allowing task creation
         if not request.user.is_staff:
-            return Response({"detail": "Permission denied. Only admins can create tasks."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Permission denied. Only admins can partially update tasks."}, status=status.HTTP_403_FORBIDDEN)
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
+
     def destroy(self, request, *args, **kwargs):
-        # Check if the user is an admin before allowing task creation
         if not request.user.is_staff:
-            return Response({"detail": "Permission denied. Only admins can create tasks."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Permission denied. Only admins can delete tasks."}, status=status.HTTP_403_FORBIDDEN)
+
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TaskCompleteAPIView(generics.UpdateAPIView):

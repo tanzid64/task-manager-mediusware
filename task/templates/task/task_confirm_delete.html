@@ -3,13 +3,16 @@
 {% block title %}Delete Task{% endblock %}
 
 {% block content %}
-<h2>Delete Task</h2>
+<div class="text-2xl font-bold dark:text-white">
+
+  <h2>Delete Task</h2>
     <p>Are you sure you want to delete the task "{{ object.title }}"?</p>
     
     <form method="post">
       {% csrf_token %}
-      <input type="submit" class="btn btn-danger" value="Confirm Delete">
-      <a href="{% url 'homepage' %}" class="btn btn-secondary">Cancel</a>
+      <input type="submit" class="inline-flex items-center my-2 px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300" value="Confirm Delete">
+      <a href="{% url 'homepage' %}" class="inline-flex items-center my-2 px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-red-300">Cancel</a>
     </form>
+</div>
 
 {% endblock %}

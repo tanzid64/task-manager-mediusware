@@ -8,33 +8,38 @@
             </div>
             <!--Filter Section Start-->
             <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-white bg-gray-800">
-                <div class="flex items-center justify-center py-4 md:py-8 flex-wrap">
-                    <form action="" method="get" class="border  focus:outline-none rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 border-blue-500 text-blue-500  bg-gray-900 ">
-                        Filter By: 
-                        <label for="priority">Priority:</label>
-                        <select id="priority" name="priority" class="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800">
-                        <option type="submit" value="">All Priorities</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        </select>
-                        <!-- Date Filter Input -->
-                        <label for="due_date">Due Date:</label>
-                        <input class="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800" type="date" id="due_date" name="due_date">
+    <div class="flex items-center justify-center py-4 md:py-8 flex-wrap">
+        <form action="{% url 'homepage' %}" method="get" class="border focus:outline-none rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 border-blue-500 text-blue-500 bg-gray-900">
+            Filter By: 
+            <!-- Priority Filter -->
+            <label for="priority">Priority:</label>
+            <select id="priority" name="priority" class="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800">
+                <option value="">All Priorities</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
 
-                        <label for="created_at">Created At:</label>
-                        <input class="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800" type="date" name="created_at" id="created_at">
+            <!-- Due Date Filter -->
+            <label for="due_date">Due Date:</label>
+            <input class="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800" type="date" id="due_date" name="due_date">
 
-                        <!-- Search -->
-                        <label for="search">Search:</label>
-                        <input type="text" name="search" id="search" value="{{ request.GET.search }}">
-                        <button type="submit">Apply Filter</button>
-                    </form>
-                </div>
-            </caption>
+            <!-- Created At Filter -->
+            <label for="created_at">Created At:</label>
+            <input class="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800" type="date" name="created_at" id="created_at">
+
+            <!-- Search Filter -->
+            <label for="search">Search:</label>
+            <input type="text" name="search" id="search" value="{{ request.GET.search }}">
+
+            <button type="submit">Apply Filter</button>
+        </form>
+    </div>
+</caption>
+
             <!--Filter Section End-->
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {% for task in data %}
+            {% for task in filter.qs %}
             <div>
                 <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow">
                     <h5 class="text-2xl font-bold tracking-tight text-gray-900">{{task.title}}</h5>
@@ -51,12 +56,18 @@
                         </svg>
                     </a>
                     {% if request.user.is_authenticated %}
-                    <a href="" class="inline-flex items-center px-3 py-2 my-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                    {% if object.is_completed %}
+        <p class="dark:text-white m-2">
+          This Task is completed by {{task.completed_by}}
+        </p>
+        {% else %}
+                    <a href="{% url "complete_task" task.slug %}" class="inline-flex items-center px-3 py-2 my-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
                         Mark as managed
                         <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                         </svg>
                     </a>
+                    {% endif %}
                     {% endif %}
                     {% if request.user.is_staff %}
                     <a href="{% url "edit_task" task.slug %}" class="inline-flex items-center px-3 py-2 my-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
