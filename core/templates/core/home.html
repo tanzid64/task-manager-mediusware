@@ -40,7 +40,7 @@
             <!--Filter Section End-->
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
             {% for task in filter.qs %}
-            {% if  task.is_completed %}
+            {% if not task.is_completed %}
             <div>
                 <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow">
                     <h5 class="text-2xl font-bold tracking-tight text-gray-900">{{task.title}}</h5>
